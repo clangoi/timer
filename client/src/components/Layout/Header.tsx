@@ -29,14 +29,14 @@ export function Header() {
           <h1 className="text-lg font-semibold" data-testid="text-app-title">FitTimer Pro</h1>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
+          {/* <Button 
             variant="ghost" 
             size="sm" 
             className="p-2 hover:bg-muted rounded-lg"
             data-testid="button-settings"
           >
             <Settings className="h-4 w-4 text-muted-foreground" />
-          </Button>
+          </Button> */}
           <Button 
             variant="ghost" 
             size="sm" 
