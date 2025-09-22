@@ -4,9 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TimerProvider } from "@/contexts/TimerContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "@/pages/Index";
 import Timer from "@/pages/Timer";
 import TabataSets from "@/pages/TabataSets";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -16,6 +18,7 @@ function Router() {
       <Route path="/" component={Index} />
       <Route path="/timer" component={Timer} />
       <Route path="/sets" component={TabataSets} />
+      <Route path="/login" component={Login} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -54,10 +57,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <TimerProvider>
-          <Toaster />
-          <Router />
-        </TimerProvider>
+        <AuthProvider>
+          <TimerProvider>
+            <Toaster />
+            <Router />
+          </TimerProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
