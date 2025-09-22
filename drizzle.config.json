@@ -1,0 +1,11 @@
+{
+  "dialect": "postgresql",
+  "schema": "./shared/schema.ts",
+  "out": "./drizzle",
+  "dbCredentials": {
+    "host": "localhost",
+    "database": "postgres",
+    "user": "postgres",
+    "password": "postgres"
+  }
+}
