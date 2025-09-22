@@ -1,6 +1,7 @@
 import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+export function Header() {
   return (
     <header className="bg-card/90 border-b border-border sticky top-0 z-50 backdrop-blur-sm" data-testid="header-main">
       <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
