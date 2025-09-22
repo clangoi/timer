@@ -176,6 +176,10 @@ export function SimpleCountdown() {
         </div>
       </div>
 
+      <p>
+        <br />
+      </p>
+
       {/* Control Buttons */}
       <div className="control-buttons">
         <div className="grid grid-cols-2 gap-3 mb-4">
