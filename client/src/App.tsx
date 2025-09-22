@@ -1,26 +1,23 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { Switch, Route, Router } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TimerProvider } from "@/contexts/TimerContext";
-import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "@/pages/Index";
 import Timer from "@/pages/Timer";
 import TabataSets from "@/pages/TabataSets";
-import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
-function Router() {
+function AppRouter() {
   return (
-    <Switch>
-      <Route path="/" component={Index} />
-      <Route path="/timer" component={Timer} />
-      <Route path="/sets" component={TabataSets} />
-      <Route path="/login" component={Login} />
-      <Route component={NotFound} />
-    </Switch>
+    <Router base="/timer">
+      <Switch>
+        <Route path="/" component={Index} />
+        <Route path="/timer" component={Timer} />
+        <Route path="/sets" component={TabataSets} />
+        <Route component={NotFound} />
+      </Switch>
+    </Router>
   );
 }
 
@@ -41,7 +38,7 @@ function App() {
   useEffect(() => {
     try {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('/timer/sw.js')
           .then((registration) => {
             console.log('SW registered: ', registration);
           })
@@ -55,16 +52,12 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <TimerProvider>
-            <Toaster />
-            <Router />
-          </TimerProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <TooltipProvider>
+      <TimerProvider>
+        <Toaster />
+        <AppRouter />
+      </TimerProvider>
+    </TooltipProvider>
   );
 }
 
