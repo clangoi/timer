@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTimerContext } from '@/contexts/TimerContext';
 import { audioManager } from '@/utils/audioUtils';
 import { vibrate, vibrationPatterns } from '@/utils/vibrationUtils';
@@ -6,7 +6,8 @@ import { TimerPhase } from '@/types/timer';
 
 export function useAudio() {
   const { audioEnabled, vibrationEnabled } = useTimerContext();
-  const lastPhaseRef = useRef<TimerPhase | null>(null);
+  // Temporarily removed useRef to fix runtime error
+  // const lastPhaseRef = useRef<TimerPhase | null>(null);
 
   const playPhaseSound = useCallback(async (phase: TimerPhase) => {
     if (!audioEnabled) return;
@@ -51,21 +52,19 @@ export function useAudio() {
   }, [vibrationEnabled]);
 
   const handlePhaseChange = useCallback((newPhase: TimerPhase) => {
-    if (lastPhaseRef.current !== newPhase) {
-      lastPhaseRef.current = newPhase;
-      playPhaseSound(newPhase);
-      
-      switch (newPhase) {
-        case 'work':
-          triggerVibration('work');
-          break;
-        case 'rest':
-          triggerVibration('rest');
-          break;
-        case 'longrest':
-          triggerVibration('longRest');
-          break;
-      }
+    // Temporarily simplified to fix runtime error - always play sounds
+    playPhaseSound(newPhase);
+    
+    switch (newPhase) {
+      case 'work':
+        triggerVibration('work');
+        break;
+      case 'rest':
+        triggerVibration('rest');
+        break;
+      case 'longrest':
+        triggerVibration('longRest');
+        break;
     }
   }, [playPhaseSound, triggerVibration]);
 
