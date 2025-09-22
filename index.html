@@ -1,3 +1,5 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -26,6 +28,17 @@
     <script type="module" crossorigin src="/timer/assets/index-BmiGVF78.js"></script>
     <link rel="stylesheet" crossorigin href="/timer/assets/index-CXZ9nag3.css">
   </head>
+
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/timer/sw.js')
+        .then(reg => console.log('SW registrado correctamente.'))
+        .catch(err => console.error('Error al registrar SW:', err));
+    });
+  }
+</script>
+
   <body>
     <div id="root"></div>
     
