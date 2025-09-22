@@ -16,9 +16,9 @@ mkdir -p ../github-pages-deploy
 echo "📁 Copiando archivos de build..."
 cp -r ../dist/public/* ../github-pages-deploy/
 
-# Crear 404.html para SPA routing
+# Copiar el 404.html original con script de redirección SPA
 echo "🔧 Configurando SPA routing para GitHub Pages..."
-cp ../github-pages-deploy/index.html ../github-pages-deploy/404.html
+cp ../client/public/404.html ../github-pages-deploy/404.html
 
 # Actualizar rutas en index.html para usar base path correcto
 echo "🔗 Actualizando rutas para base path '/timer/'..."
