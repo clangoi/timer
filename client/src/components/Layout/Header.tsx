@@ -1,4 +1,4 @@
-import { Settings, Moon, Sun } from 'lucide-react';
+import { Settings, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -44,10 +44,7 @@ export function Header() {
             onClick={toggleTheme}
             data-testid="button-theme-toggle"
           >
-            {isDark ? 
-              <Sun className="h-4 w-4 text-muted-foreground" /> : 
-              <Moon className="h-4 w-4 text-muted-foreground" />
-            }
+            <Moon className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
       </div>
