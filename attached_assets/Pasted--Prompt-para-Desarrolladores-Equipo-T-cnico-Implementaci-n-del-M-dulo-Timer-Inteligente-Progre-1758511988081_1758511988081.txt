@@ -1,0 +1,137 @@
+**Prompt para Desarrolladores / Equipo Técnico — Implementación del Módulo “Timer Inteligente Progresivo con Secuencias Tabata”**
+
+> **Objetivo General:**  
+> Desarrollar un **sistema de timer multifuncional, persistente y altamente personalizable**, centrado en tres modos clave:  
+> 1. **Cronómetro progresivo desde 0 (sin límite)** — ideal para ejercicios libres.  
+> 2. **Sistema avanzado de secuencias Tabata** — con gestión completa de múltiples tabatas consecutivos.  
+> 3. **Interfaz flotante + persistencia global + feedback sensorial (audio/visual)** — para máxima usabilidad durante entrenamientos.  
+>   
+> Todo debe gestionarse mediante un **estado global compartido (Context API)**, con controles intuitivos, notificaciones integradas y configuraciones que persisten entre sesiones.
+
+---
+
+> **Requisitos Funcionales Detallados:**
+
+### ▶️ **Modo Cronómetro Progresivo (Libre)**
+- Cuenta **desde 0 segundos sin límite de tiempo**.
+- Ideal para registrar duración de ejercicios abiertos o sesiones de flujo libre.
+- Debe mostrar formato **MM:SS** actualizado en tiempo real.
+- Debe incluir controles:  
+  - Iniciar / Pausar (mismo botón, cambia estado)  
+  - Reiniciar (vuelve a 00:00, conserva configuración)  
+  - Minimizar / Maximizar (modo flotante)  
+  - Cerrar (sin perder estado — ver persistencia)
+
+---
+
+### ▶️ **Modo Secuencias Tabata (Avanzado)**
+
+#### ➤ Gestión de Secuencias:
+- El usuario puede **crear una secuencia compuesta por múltiples bloques Tabata**.
+- Cada Tabata es editable individualmente:  
+  - Tiempo de trabajo (ej: 20s)  
+  - Tiempo de descanso corto (ej: 10s)  
+  - Tiempo de descanso largo entre sets (ej: 60s)  
+  - Repeticiones por set  
+  - Nombre personalizado (ej: “Tabata Piernas”, “Sprint Intenso”)
+
+#### ➤ Acciones sobre la secuencia:
+- ✅ **Agregar** nuevo Tabata al final de la secuencia  
+- ✏️ **Editar** cualquier Tabata existente (configuración + nombre)  
+- ❌ **Eliminar** un Tabata específico  
+- 🧹 **Limpiar toda la secuencia** (reset completo)  
+- ▶️ **Navegación automática**: al terminar un Tabata, pasa automáticamente al siguiente  
+- 📍 **Indicador visual en pantalla**: *“Secuencia 2/5”* durante ejecución
+
+---
+
+### ▶️ **Controles Universales (Todos los modos)**
+- **Iniciar / Pausar**: Botón único que cambia su etiqueta e icono según estado (`isRunning`, `isPaused`)  
+- **Reiniciar**: Vuelve al estado inicial sin borrar configuración  
+- **Siguiente**: Salta al siguiente ejercicio o fase, incluso si el tiempo no ha terminado *(útil para ajustes en vivo)*  
+- **Configurar**: Abre panel de ajustes específicos del modo actual  
+- **Minimizar / Maximizar**: Conmuta entre vista completa y burbuja flotante  
+- **Cerrar**: Oculta el timer, pero **mantiene el estado en memoria y persistencia**
+
+---
+
+### ▶️ **Estados del Timer (Globales)**
+- `isRunning`: Timer activo y contando  
+- `isPaused`: Timer detenido, pero con tiempo guardado  
+- `isCompleted`: Timer finalizado → activa notificación de audio + visual  
+- `currentMode`: “cronometer” | “tabata” | “countdown”  
+- `currentSequenceIndex`: Índice del Tabata actual en secuencia  
+- `sequenceTotal`: Total de Tabatas en la secuencia
+
+---
+
+### ▶️ **Sistema de Persistencia**
+- ✅ **Guardado automático en tiempo real** de:  
+  - Configuraciones de cada Tabata  
+  - Estado actual del timer (tiempo transcurrido, pausado, etc.)  
+  - Modo seleccionado (recuerda el último usado al reabrir la app)  
+- Debe persistir incluso si:  
+  - El usuario cierra la app  
+  - Cambia de sección  
+  - El dispositivo se bloquea (si el SO lo permite)
+
+---
+
+### ▶️ **Notificaciones y Feedback**
+
+#### ➤ Audio Integrado (sin archivos externos):
+- 🔊 Sonido suave al **iniciar/pausar**  
+- 🔔 Sonido distintivo al **cambiar de fase** (trabajo → descanso → descanso largo)  
+- 🎯 Notificación clara (sonido + vibración si es móvil) al **finalizar secuencia completa**
+
+#### ➤ Feedback Visual Dinámico:
+- 🟢 **Borde verde** cuando el timer está activo (`isRunning`)  
+- 🔴 **Fondo/indicador ROJO** durante fase de **TRABAJO**  
+- 🟡 **Fondo/indicador AMARILLO** durante **DESCANSO CORTO**  
+- 🔵 **Fondo/indicador AZUL** durante **DESCANSO LARGO / CRONÓMETRO LIBRE**  
+- ✅ **Verde brillante + checkmark** al completar  
+- 📊 **Texto descriptivo visible**: *“TRABAJO”*, *“DESCANSO”*, *“Descanso entre sets”*  
+- 📈 **Progreso visual**: *“Set 3/8 - Ejercicio 2/4”*
+
+---
+
+### ▶️ **Configuración Avanzada**
+- 🛠️ Todos los tiempos son **personalizables al segundo** (no solo predefinidos)  
+- ✏️ Nombres personalizados para cada Tabata dentro de la secuencia  
+- 🔄 Conversión automática de segundos a formato **MM:SS** en display  
+- ⏱️ Muestra **tiempo restante** (en modos countdown/Tabata) o **tiempo transcurrido** (en cronómetro)
+
+---
+
+### ▶️ **Arquitectura y Estado Global**
+- Utilizar **Context API (o Zustand/Redux si ya está en el stack)** para compartir estado en toda la app.
+- Acciones globales disponibles:  
+  ```ts
+  setMode(mode: 'cronometer' | 'tabata' | 'countdown')  
+  startTimer()  
+  pauseTimer()  
+  resetTimer()  
+  setFloating(isFloating: boolean)  
+  updateTabataConfig(index: number, config: TabataConfig)  
+  updateTimerConfig(config: TimerConfig)  
+  nextPhase() // para saltar manualmente
+  ```
+
+---
+
+> **Resultado Esperado:**  
+> El usuario puede:  
+> - Medir sesiones libres con un cronómetro infinito.  
+> - Crear, editar y ejecutar secuencias complejas de Tabata con navegación automática.  
+> - Recibir feedback claro por audio y color en cada fase.  
+> - Cerrar o minimizar el timer sin perder su progreso.  
+> - Volver a la app y encontrar todo como lo dejó.  
+>   
+> El sistema es robusto, profesional y diseñado para atletas, entrenadores y usuarios exigentes que necesitan precisión, flexibilidad y continuidad.
+
+> **Nota clave:**  
+> Este no es un simple cronómetro. Es un **sistema de gestión de tiempo inteligente para entrenamiento de alto rendimiento**, con lógica de estado, persistencia, feedback sensorial y personalización avanzada. Su correcta implementación transformará la experiencia de entrenamiento en la app.
+
+---
+
+✅ Listo para copiar en tickets técnicos, documentación de arquitectura o briefings de desarrollo. Incluye especificaciones de UX, lógica de estado, persistencia, audiovisual y arquitectura global.
