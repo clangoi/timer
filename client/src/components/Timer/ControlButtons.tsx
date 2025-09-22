@@ -1,5 +1,5 @@
 import { useTimer } from '@/hooks/useTimer';
-import { Play, Pause, RotateCcw, SkipForward, Minimize2, Settings } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ControlButtonsProps {
@@ -7,7 +7,7 @@ interface ControlButtonsProps {
 }
 
 export function ControlButtons({ onOpenConfig }: ControlButtonsProps) {
-  const { isRunning, toggleTimer, resetTimer, handleNext, setFloating } = useTimer();
+  const { isRunning, toggleTimer, resetTimer, handleNext } = useTimer();
 
   return (
     <div className="mb-8" data-testid="control-buttons">
@@ -35,7 +35,7 @@ export function ControlButtons({ onOpenConfig }: ControlButtonsProps) {
         </Button>
       </div>
       
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <Button
           onClick={handleNext}
           variant="outline"
@@ -44,16 +44,6 @@ export function ControlButtons({ onOpenConfig }: ControlButtonsProps) {
         >
           <SkipForward className="w-4 h-4 mr-2" />
           Siguiente
-        </Button>
-        
-        <Button
-          onClick={() => setFloating(true)}
-          variant="outline"
-          className="py-3 px-4 rounded-lg font-medium text-sm transition-all btn-control hover:bg-muted"
-          data-testid="button-minimize"
-        >
-          <Minimize2 className="w-4 h-4 mr-2" />
-          Minimizar
         </Button>
         
         <Button

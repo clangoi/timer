@@ -3,7 +3,6 @@ import { Header } from '@/components/Layout/Header';
 import { ModeSelector } from '@/components/Layout/ModeSelector';
 import { TimerDisplay } from '@/components/Timer/TimerDisplay';
 import { ControlButtons } from '@/components/Timer/ControlButtons';
-import { FloatingTimer } from '@/components/Timer/FloatingTimer';
 import { TabataSequenceManager } from '@/components/Tabata/TabataSequenceManager';
 import { ConfigModal } from '@/components/Modals/ConfigModal';
 import { QuickStats } from '@/components/Stats/QuickStats';
@@ -12,7 +11,7 @@ import { useTimer } from '@/hooks/useTimer';
 import { TabataConfig } from '@/types/timer';
 
 export default function Timer() {
-  const { isFloating, currentMode } = useTimer();
+  const { currentMode } = useTimer();
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [editingTabata, setEditingTabata] = useState<TabataConfig | null>(null);
 
@@ -35,10 +34,6 @@ export default function Timer() {
     setIsConfigOpen(false);
     setEditingTabata(null);
   };
-
-  if (isFloating) {
-    return <FloatingTimer />;
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-testid="timer-page">

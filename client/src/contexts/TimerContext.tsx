@@ -15,7 +15,6 @@ const initialState: TimerState = {
   tabataSequences: [],
   audioEnabled: true,
   vibrationEnabled: true,
-  isFloating: false,
   sessionStats: {
     totalTime: 0,
     completedSets: 0,
@@ -30,7 +29,6 @@ type TimerAction =
   | { type: 'INCREMENT_TIME' }
   | { type: 'NEXT_PHASE' }
   | { type: 'SET_MODE'; payload: TimerMode }
-  | { type: 'SET_FLOATING'; payload: boolean }
   | { type: 'ADD_TABATA'; payload: Omit<TabataConfig, 'id'> }
   | { type: 'UPDATE_TABATA'; payload: { id: string; config: Partial<TabataConfig> } }
   | { type: 'DELETE_TABATA'; payload: string }
@@ -42,15 +40,12 @@ type TimerAction =
 function timerReducer(state: TimerState, action: TimerAction): TimerState {
   switch (action.type) {
     case 'START_TIMER':
-      console.log('START_TIMER action');
       return { ...state, isRunning: true, isPaused: false };
     
     case 'PAUSE_TIMER':
-      console.log('PAUSE_TIMER action');
       return { ...state, isRunning: false, isPaused: true };
     
     case 'RESET_TIMER':
-      console.log('RESET_TIMER action');
       return {
         ...state,
         isRunning: false,
@@ -63,14 +58,9 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
       };
     
     case 'INCREMENT_TIME':
-      console.log('INCREMENT_TIME action:', { isRunning: state.isRunning, isPaused: state.isPaused, currentTime: state.currentTime });
-      if (!state.isRunning || state.isPaused) {
-        console.log('Timer not running or paused, returning current state');
-        return state;
-      }
+      if (!state.isRunning || state.isPaused) return state;
       
       const newTime = state.currentTime + 1;
-      console.log('Incrementing time from', state.currentTime, 'to', newTime);
       let newState = { ...state, currentTime: newTime };
       
       // Handle Tabata phase transitions
@@ -95,7 +85,6 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
               newState.currentSet += 1;
             } else {
               // Sequence complete
-              console.log('Tabata sequence complete, stopping timer');
               newState.isRunning = false;
               newState.sessionStats.completedSequences += 1;
             }
@@ -150,9 +139,6 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
         currentSetCycle: 0,
         sequenceTotal: action.payload === 'tabata' ? state.tabataSequences.length : 0
       };
-    
-    case 'SET_FLOATING':
-      return { ...state, isFloating: action.payload };
     
     case 'ADD_TABATA':
       const newTabata = { ...action.payload, id: Date.now().toString() };
@@ -229,17 +215,11 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
   // Timer interval
   useEffect(() => {
-    console.log('Timer interval effect:', { isRunning: state.isRunning, isPaused: state.isPaused, currentTime: state.currentTime });
     if (state.isRunning && !state.isPaused) {
-      console.log('Starting timer interval');
       const interval = setInterval(() => {
-        console.log('INCREMENT_TIME dispatched');
         dispatch({ type: 'INCREMENT_TIME' });
       }, 1000);
-      return () => {
-        console.log('Clearing timer interval');
-        clearInterval(interval);
-      };
+      return () => clearInterval(interval);
     }
   }, [state.isRunning, state.isPaused]);
 
@@ -249,7 +229,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     resetTimer: () => dispatch({ type: 'RESET_TIMER' }),
     nextPhase: () => dispatch({ type: 'NEXT_PHASE' }),
     setMode: (mode) => dispatch({ type: 'SET_MODE', payload: mode }),
-    setFloating: (isFloating) => dispatch({ type: 'SET_FLOATING', payload: isFloating }),
     addTabataSequence: (config) => dispatch({ type: 'ADD_TABATA', payload: config }),
     updateTabataSequence: (id, config) => dispatch({ type: 'UPDATE_TABATA', payload: { id, config } }),
     deleteTabataSequence: (id) => dispatch({ type: 'DELETE_TABATA', payload: id }),

@@ -24,7 +24,6 @@ export interface TimerState {
   tabataSequences: TabataConfig[];
   audioEnabled: boolean;
   vibrationEnabled: boolean;
-  isFloating: boolean;
   sessionStats: {
     totalTime: number;
     completedSets: number;
@@ -38,7 +37,6 @@ export interface TimerActions {
   resetTimer: () => void;
   nextPhase: () => void;
   setMode: (mode: TimerMode) => void;
-  setFloating: (isFloating: boolean) => void;
   addTabataSequence: (config: Omit<TabataConfig, 'id'>) => void;
   updateTabataSequence: (id: string, config: Partial<TabataConfig>) => void;
   deleteTabataSequence: (id: string) => void;
