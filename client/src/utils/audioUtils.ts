@@ -85,6 +85,23 @@ export class AudioManager {
     setTimeout(() => this.playTone(659, 0.2), 250); // E
     setTimeout(() => this.playTone(784, 0.4), 500); // G
   }
+
+  async playCountdownSound(secondsRemaining: number) {
+    // Sonidos de cuenta regresiva para los últimos 3 segundos
+    switch (secondsRemaining) {
+      case 3:
+        await this.playTone(600, 0.15); // Tono medio para 3
+        break;
+      case 2:
+        await this.playTone(700, 0.15); // Tono más alto para 2
+        break;
+      case 1:
+        await this.playTone(800, 0.2); // Tono alto y más largo para 1
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 export const audioManager = new AudioManager();

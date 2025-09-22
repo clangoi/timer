@@ -5,7 +5,7 @@ import { vibrate, vibrationPatterns } from '@/utils/vibrationUtils';
 import { TimerPhase } from '@/types/timer';
 
 export function useAudio() {
-  const { audioEnabled, vibrationEnabled } = useTimerContext();
+  const { audioEnabled, vibrationEnabled, currentMode } = useTimerContext();
   // Temporarily removed useRef to fix runtime error
   // const lastPhaseRef = useRef<TimerPhase | null>(null);
 
@@ -51,26 +51,41 @@ export function useAudio() {
     }
   }, [vibrationEnabled]);
 
-  const handlePhaseChange = useCallback((newPhase: TimerPhase) => {
-    // Temporarily simplified to fix runtime error - always play sounds
-    playPhaseSound(newPhase);
+  const playCountdownSound = useCallback(async (secondsRemaining: number) => {
+    if (!audioEnabled) return;
     
-    switch (newPhase) {
-      case 'work':
-        triggerVibration('work');
-        break;
-      case 'rest':
-        triggerVibration('rest');
-        break;
-      case 'longrest':
-        triggerVibration('longRest');
-        break;
+    // Solo emitir sonidos en los últimos 3 segundos para Tabata
+    if (currentMode === 'tabata' && secondsRemaining <= 3 && secondsRemaining > 0) {
+      await audioManager.playCountdownSound(secondsRemaining);
     }
-  }, [playPhaseSound, triggerVibration]);
+  }, [audioEnabled, currentMode]);
+
+  const handlePhaseChange = useCallback((newPhase: TimerPhase) => {
+    // Solo emitir sonidos de cambio de fase si NO estamos en modo Tabata
+    if (currentMode !== 'tabata') {
+      playPhaseSound(newPhase);
+    }
+    
+    // Mantener vibraciones solo para transiciones de fase importantes
+    if (currentMode !== 'tabata') {
+      switch (newPhase) {
+        case 'work':
+          triggerVibration('work');
+          break;
+        case 'rest':
+          triggerVibration('rest');
+          break;
+        case 'longrest':
+          triggerVibration('longRest');
+          break;
+      }
+    }
+  }, [playPhaseSound, triggerVibration, currentMode]);
 
   return {
     playPhaseSound,
     playActionSound,
+    playCountdownSound,
     triggerVibration,
     handlePhaseChange
   };

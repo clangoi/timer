@@ -4,7 +4,7 @@ import { useAudio } from '@/hooks/useAudio';
 
 export function useTimer() {
   const timer = useTimerContext();
-  const { handlePhaseChange, playActionSound, triggerVibration } = useAudio();
+  const { handlePhaseChange, playActionSound, playCountdownSound, triggerVibration } = useAudio();
 
   // Handle phase changes for audio/vibration feedback
   useEffect(() => {
@@ -21,6 +21,34 @@ export function useTimer() {
       }
     }
   }, [timer.isRunning, timer.currentTime, timer.currentMode, timer.currentSequenceIndex, timer.tabataSequences.length, playActionSound, triggerVibration]);
+
+  // Handle countdown sounds for last 3 seconds in Tabata mode
+  useEffect(() => {
+    if (timer.currentMode === 'tabata' && timer.isRunning && !timer.isPaused) {
+      const currentTabata = timer.tabataSequences[timer.currentSequenceIndex];
+      if (!currentTabata) return;
+
+      let timeRemaining = 0;
+      switch (timer.currentPhase) {
+        case 'work':
+          timeRemaining = Math.max(0, currentTabata.workTime - timer.currentTime);
+          break;
+        case 'rest':
+          timeRemaining = Math.max(0, currentTabata.restTime - timer.currentTime);
+          break;
+        case 'longrest':
+          timeRemaining = Math.max(0, currentTabata.longRestTime - timer.currentTime);
+          break;
+        default:
+          return;
+      }
+      
+      // Emitir sonidos solo cuando quedan exactamente 3, 2, o 1 segundos
+      if (timeRemaining === 3 || timeRemaining === 2 || timeRemaining === 1) {
+        playCountdownSound(timeRemaining);
+      }
+    }
+  }, [timer.currentMode, timer.isRunning, timer.isPaused, timer.currentTime, timer.currentPhase, timer.currentSequenceIndex, timer.tabataSequences, playCountdownSound]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
