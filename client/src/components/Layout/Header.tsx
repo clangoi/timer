@@ -1,21 +1,7 @@
-import { Settings, Moon, Sun } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Header() {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains('dark');
-    setIsDark(isDarkMode);
-  }, []);
-
-  const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    document.documentElement.classList.toggle('dark', newIsDark);
-    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
-  };
 
   return (
     <header className="bg-card/90 border-b border-border sticky top-0 z-50 backdrop-blur-sm" data-testid="header-main">
@@ -36,18 +22,6 @@ export function Header() {
             data-testid="button-settings"
           >
             <Settings className="h-4 w-4 text-muted-foreground" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="p-2 hover:bg-muted rounded-lg"
-            onClick={toggleTheme}
-            data-testid="button-theme-toggle"
-          >
-            {isDark ? 
-              <Sun className="h-4 w-4 text-muted-foreground" /> : 
-              <Moon className="h-4 w-4 text-muted-foreground" />
-            }
           </Button>
         </div>
       </div>
