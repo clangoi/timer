@@ -54,8 +54,8 @@ export function useAudio() {
   const playCountdownSound = useCallback(async (secondsRemaining: number) => {
     if (!audioEnabled) return;
     
-    // Solo emitir sonidos en los últimos 3 segundos para Tabata
-    if (currentMode === 'tabata' && secondsRemaining <= 3 && secondsRemaining > 0) {
+    // Emitir sonidos en los últimos 3 segundos para Tabata y Simple Countdown
+    if ((currentMode === 'tabata' || currentMode === 'simple-countdown') && secondsRemaining <= 3 && secondsRemaining > 0) {
       await audioManager.playCountdownSound(secondsRemaining);
     }
   }, [audioEnabled, currentMode]);

@@ -1,5 +1,5 @@
 import { useTimer } from '@/hooks/useTimer';
-import { Clock, Repeat } from 'lucide-react';
+import { Clock, Repeat, Timer } from 'lucide-react';
 import { TimerMode } from '@/types/timer';
 
 export function ModeSelector() {
@@ -7,7 +7,8 @@ export function ModeSelector() {
 
   const modes = [
     { id: 'chronometer' as TimerMode, label: 'Cronómetro', icon: Clock },
-    { id: 'tabata' as TimerMode, label: 'Tabata', icon: Repeat }
+    { id: 'tabata' as TimerMode, label: 'Tabata', icon: Repeat },
+    { id: 'simple-countdown' as TimerMode, label: 'Temporizador', icon: Timer }
   ];
 
   return (

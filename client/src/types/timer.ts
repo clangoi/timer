@@ -1,6 +1,6 @@
-export type TimerMode = 'chronometer' | 'tabata';
+export type TimerMode = 'chronometer' | 'tabata' | 'simple-countdown';
 
-export type TimerPhase = 'work' | 'rest' | 'longrest' | 'chronometer';
+export type TimerPhase = 'work' | 'rest' | 'longrest' | 'chronometer' | 'simple-countdown';
 
 export interface TabataConfig {
   id: string;
@@ -33,6 +33,10 @@ export interface TimerState {
   tabataSets: TabataSet[];
   audioEnabled: boolean;
   vibrationEnabled: boolean;
+  // Simple countdown mode specific state
+  simpleCountdownTime: number; // configured time in seconds
+  simpleCountdownInitialTime: number; // initial time for reset
+  isCompleted: boolean; // indicates if timer has finished
   sessionStats: {
     totalTime: number;
     completedSets: number;
@@ -56,4 +60,7 @@ export interface TimerActions {
   deleteTabataSet: (id: string) => void;
   toggleAudio: () => void;
   toggleVibration: () => void;
+  // Simple countdown mode actions
+  setSimpleCountdownTime: (timeInSeconds: number) => void;
+  completeTimer: () => void;
 }

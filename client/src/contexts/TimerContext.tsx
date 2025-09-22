@@ -16,6 +16,10 @@ const initialState: TimerState = {
   tabataSets: [],
   audioEnabled: true,
   vibrationEnabled: true,
+  // Simple countdown mode state
+  simpleCountdownTime: 300, // 5 minutes default
+  simpleCountdownInitialTime: 300,
+  isCompleted: false,
   sessionStats: {
     totalTime: 0,
     completedSets: 0,
@@ -40,6 +44,8 @@ type TimerAction =
   | { type: 'DELETE_TABATA_SET'; payload: string }
   | { type: 'TOGGLE_AUDIO' }
   | { type: 'TOGGLE_VIBRATION' }
+  | { type: 'SET_SIMPLE_COUNTDOWN_TIME'; payload: number }
+  | { type: 'COMPLETE_TIMER' }
   | { type: 'LOAD_STATE'; payload: Partial<TimerState> };
 
 function timerReducer(state: TimerState, action: TimerAction): TimerState {
@@ -55,16 +61,34 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
         ...state,
         isRunning: false,
         isPaused: false,
-        currentTime: 0,
+        currentTime: state.currentMode === 'simple-countdown' ? state.simpleCountdownInitialTime : 0,
         currentSequenceIndex: 0,
         currentSet: 0,
         currentSetCycle: 0,
-        currentPhase: state.currentMode === 'chronometer' ? 'chronometer' : 'work'
+        isCompleted: false,
+        currentPhase: state.currentMode === 'chronometer' ? 'chronometer' : 
+                     state.currentMode === 'simple-countdown' ? 'simple-countdown' : 'work'
       };
     
     case 'INCREMENT_TIME':
       if (!state.isRunning || state.isPaused) return state;
       
+      // Handle simple countdown mode
+      if (state.currentMode === 'simple-countdown') {
+        const newTime = state.currentTime - 1;
+        let newState = { ...state, currentTime: newTime };
+        
+        // Check if countdown reached zero
+        if (newTime <= 0) {
+          newState.currentTime = 0;
+          newState.isRunning = false;
+          newState.isCompleted = true;
+        }
+        
+        return newState;
+      }
+      
+      // Handle chronometer and tabata modes
       const newTime = state.currentTime + 1;
       let newState = { ...state, currentTime: newTime };
       
@@ -161,11 +185,13 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
       return {
         ...state,
         currentMode: action.payload,
-        currentPhase: action.payload === 'chronometer' ? 'chronometer' : 'work',
-        currentTime: 0,
+        currentPhase: action.payload === 'chronometer' ? 'chronometer' : 
+                     action.payload === 'simple-countdown' ? 'simple-countdown' : 'work',
+        currentTime: action.payload === 'simple-countdown' ? state.simpleCountdownInitialTime : 0,
         currentSequenceIndex: 0,
         currentSet: 0,
         currentSetCycle: 0,
+        isCompleted: false,
         sequenceTotal: action.payload === 'tabata' ? state.tabataSequences.length : 0
       };
     
@@ -257,6 +283,22 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
     case 'TOGGLE_VIBRATION':
       return { ...state, vibrationEnabled: !state.vibrationEnabled };
     
+    case 'SET_SIMPLE_COUNTDOWN_TIME':
+      return {
+        ...state,
+        simpleCountdownTime: action.payload,
+        simpleCountdownInitialTime: action.payload,
+        currentTime: action.payload,
+        isCompleted: false
+      };
+    
+    case 'COMPLETE_TIMER':
+      return {
+        ...state,
+        isRunning: false,
+        isCompleted: true
+      };
+    
     case 'LOAD_STATE':
       return { ...state, ...action.payload };
     
@@ -333,7 +375,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     updateTabataSet: (id, set) => dispatch({ type: 'UPDATE_TABATA_SET', payload: { id, set } }),
     deleteTabataSet: (id) => dispatch({ type: 'DELETE_TABATA_SET', payload: id }),
     toggleAudio: () => dispatch({ type: 'TOGGLE_AUDIO' }),
-    toggleVibration: () => dispatch({ type: 'TOGGLE_VIBRATION' })
+    toggleVibration: () => dispatch({ type: 'TOGGLE_VIBRATION' }),
+    // Simple countdown mode actions
+    setSimpleCountdownTime: (timeInSeconds) => dispatch({ type: 'SET_SIMPLE_COUNTDOWN_TIME', payload: timeInSeconds }),
+    completeTimer: () => dispatch({ type: 'COMPLETE_TIMER' })
   };
 
   return (

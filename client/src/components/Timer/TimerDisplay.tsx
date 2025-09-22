@@ -27,6 +27,8 @@ export function TimerDisplay() {
         return 'DESCANSO LARGO';
       case 'chronometer':
         return 'CRONÓMETRO LIBRE';
+      case 'simple-countdown':
+        return 'TEMPORIZADOR';
       default:
         return '';
     }
@@ -38,13 +40,16 @@ export function TimerDisplay() {
       work: "phase-work",
       rest: "phase-rest", 
       longrest: "phase-longrest",
-      chronometer: "phase-chronometer"
+      chronometer: "phase-chronometer",
+      'simple-countdown': "phase-chronometer"
     };
     
     return cn(baseClasses, phaseClasses[currentPhase]);
   };
 
   const displayTime = currentMode === 'chronometer' 
+    ? formatTime(currentTime)
+    : currentMode === 'simple-countdown'
     ? formatTime(currentTime)
     : formatTime(getPhaseTimeRemaining());
 
