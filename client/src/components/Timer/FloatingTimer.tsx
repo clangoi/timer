@@ -7,10 +7,12 @@ export function FloatingTimer() {
     isFloating, 
     isRunning, 
     currentTime, 
+    currentMode,
     currentPhase, 
     formatTime, 
     toggleTimer, 
-    setFloating 
+    setFloating,
+    getPhaseTimeRemaining
   } = useTimer();
 
   if (!isFloating) return null;
@@ -40,7 +42,10 @@ export function FloatingTimer() {
           {getPhaseLabel()}
         </div>
         <div className="timer-display text-2xl font-bold mb-2" data-testid="text-floating-time">
-          {formatTime(currentTime)}
+          {currentMode === 'chronometer' 
+            ? formatTime(currentTime)
+            : formatTime(getPhaseTimeRemaining())
+          }
         </div>
         <div className="flex justify-center space-x-2">
           <Button
