@@ -41,9 +41,7 @@ export function TimerDisplay() {
       chronometer: "phase-chronometer"
     };
     
-    const pulseClass = isRunning ? "pulse-active" : "";
-    
-    return cn(baseClasses, phaseClasses[currentPhase], pulseClass);
+    return cn(baseClasses, phaseClasses[currentPhase]);
   };
 
   const displayTime = currentMode === 'chronometer' 
