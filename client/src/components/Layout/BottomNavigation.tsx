@@ -5,7 +5,7 @@ export function BottomNavigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { icon: Timer, label: 'Timer', path: '/', active: location === '/' },
+    { icon: Timer, label: 'Timer', path: '/timer', active: location === '/timer' },
     { icon: BarChart3, label: 'Sets', path: '/sets', active: location === '/sets' },
     { icon: Dumbbell, label: 'Workouts', path: '/workouts', active: false },
     { icon: User, label: 'Profile', path: '/profile', active: false }

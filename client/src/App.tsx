@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TimerProvider } from "@/contexts/TimerContext";
+import Index from "@/pages/Index";
 import Timer from "@/pages/Timer";
 import TabataSets from "@/pages/TabataSets";
 import NotFound from "@/pages/not-found";
@@ -12,7 +13,8 @@ import { useEffect } from "react";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Timer} />
+      <Route path="/" component={Index} />
+      <Route path="/timer" component={Timer} />
       <Route path="/sets" component={TabataSets} />
       <Route component={NotFound} />
     </Switch>
