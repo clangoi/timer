@@ -1,4 +1,4 @@
-import { BarChart3, Dumbbell, Timer, User } from 'lucide-react';
+import { BarChart3, Timer, User } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
 export function BottomNavigation() {
@@ -7,7 +7,6 @@ export function BottomNavigation() {
   const navItems = [
     { icon: Timer, label: 'Timer', path: '/timer', active: location === '/timer' },
     { icon: BarChart3, label: 'Sets', path: '/sets', active: location === '/sets' },
-    { icon: Dumbbell, label: 'Workouts', path: '/workouts', active: false },
     { icon: User, label: 'Profile', path: '/profile', active: false }
   ];
 
@@ -16,7 +15,7 @@ export function BottomNavigation() {
       <div className="max-w-md mx-auto px-4 py-2">
         <div className="flex justify-around">
           {navItems.map(({ icon: Icon, label, path, active }) => (
-            path && (path === '/workouts' || path === '/profile') ? (
+            path && path === '/profile' ? (
               <button
                 key={label}
                 className={`flex flex-col items-center py-2 px-3 transition-colors ${
