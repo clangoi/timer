@@ -7,7 +7,7 @@ interface ControlButtonsProps {
 }
 
 export function ControlButtons({ onOpenConfig }: ControlButtonsProps) {
-  const { isRunning, toggleTimer, resetTimer, handleNext } = useTimer();
+  const { isRunning, toggleTimer, resetTimer, handleNext, currentMode } = useTimer();
 
   return (
     <div className="mb-8" data-testid="control-buttons">
@@ -35,27 +35,29 @@ export function ControlButtons({ onOpenConfig }: ControlButtonsProps) {
         </Button>
       </div>
       
-      <div className="grid grid-cols-2 gap-2">
-        <Button
-          onClick={handleNext}
-          variant="outline"
-          className="py-3 px-4 rounded-lg font-medium text-sm transition-all btn-control hover:bg-muted"
-          data-testid="button-next"
-        >
-          <SkipForward className="w-4 h-4 mr-2" />
-          Siguiente
-        </Button>
-        
-        <Button
-          onClick={onOpenConfig}
-          variant="outline"
-          className="py-3 px-4 rounded-lg font-medium text-sm transition-all btn-control hover:bg-muted"
-          data-testid="button-config"
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Config
-        </Button>
-      </div>
+      {currentMode !== 'chronometer' && (
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            onClick={handleNext}
+            variant="outline"
+            className="py-3 px-4 rounded-lg font-medium text-sm transition-all btn-control hover:bg-muted"
+            data-testid="button-next"
+          >
+            <SkipForward className="w-4 h-4 mr-2" />
+            Siguiente
+          </Button>
+          
+          <Button
+            onClick={onOpenConfig}
+            variant="outline"
+            className="py-3 px-4 rounded-lg font-medium text-sm transition-all btn-control hover:bg-muted"
+            data-testid="button-config"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Config
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
