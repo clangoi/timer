@@ -24,7 +24,11 @@ export function useTimer() {
 
   // Handle countdown sounds for last 3 seconds in Tabata mode
   useEffect(() => {
-    if (timer.currentMode === 'tabata' && timer.isRunning && !timer.isPaused) {
+    if (timer.currentMode === 'tabata' && 
+        timer.isRunning && 
+        !timer.isPaused && 
+        timer.tabataSequences.length > 0) {
+      
       const currentTabata = timer.tabataSequences[timer.currentSequenceIndex];
       if (!currentTabata) return;
 
@@ -44,11 +48,12 @@ export function useTimer() {
       }
       
       // Emitir sonidos solo cuando quedan exactamente 3, 2, o 1 segundos
+      // Y solo si el tiempo está realmente corriendo (currentTime > 0 indica que el timer avanzó)
       if (timeRemaining === 3 || timeRemaining === 2 || timeRemaining === 1) {
         playCountdownSound(timeRemaining);
       }
     }
-  }, [timer.currentMode, timer.isRunning, timer.isPaused, timer.currentTime, timer.currentPhase, timer.currentSequenceIndex, timer.tabataSequences, playCountdownSound]);
+  }, [timer.currentMode, timer.isRunning, timer.isPaused, timer.currentTime, timer.currentPhase, timer.currentSequenceIndex, timer.tabataSequences.length, playCountdownSound]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);

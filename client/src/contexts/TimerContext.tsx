@@ -134,6 +134,30 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
       return state;
     
     case 'SET_MODE':
+      // Si cambiamos a modo Tabata y no hay secuencias, agregar una por defecto
+      if (action.payload === 'tabata' && state.tabataSequences.length === 0) {
+        const defaultTabata = {
+          id: Date.now().toString(),
+          name: 'Tabata Básico',
+          workTime: 20,
+          restTime: 10,
+          longRestTime: 60,
+          sets: 8
+        };
+        
+        return {
+          ...state,
+          currentMode: action.payload,
+          currentPhase: 'work',
+          currentTime: 0,
+          currentSequenceIndex: 0,
+          currentSet: 0,
+          currentSetCycle: 0,
+          tabataSequences: [defaultTabata],
+          sequenceTotal: 1
+        };
+      }
+      
       return {
         ...state,
         currentMode: action.payload,
