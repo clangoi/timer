@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { TimerState, TimerActions, TimerMode, TabataConfig } from '@/types/timer';
+import { TimerState, TimerActions, TimerMode, TabataConfig, TabataSet } from '@/types/timer';
 import { usePersistence } from '@/hooks/usePersistence';
 
 const initialState: TimerState = {
@@ -13,6 +13,7 @@ const initialState: TimerState = {
   currentSetCycle: 0,
   sequenceTotal: 0,
   tabataSequences: [],
+  tabataSets: [],
   audioEnabled: true,
   vibrationEnabled: true,
   sessionStats: {
@@ -33,6 +34,10 @@ type TimerAction =
   | { type: 'UPDATE_TABATA'; payload: { id: string; config: Partial<TabataConfig> } }
   | { type: 'DELETE_TABATA'; payload: string }
   | { type: 'CLEAR_SEQUENCES' }
+  | { type: 'LOAD_TABATA_SET'; payload: string }
+  | { type: 'ADD_TABATA_SET'; payload: Omit<TabataSet, 'id' | 'createdAt'> }
+  | { type: 'UPDATE_TABATA_SET'; payload: { id: string; set: Partial<TabataSet> } }
+  | { type: 'DELETE_TABATA_SET'; payload: string }
   | { type: 'TOGGLE_AUDIO' }
   | { type: 'TOGGLE_VIBRATION' }
   | { type: 'LOAD_STATE'; payload: Partial<TimerState> };
@@ -179,6 +184,48 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
         currentSet: 0,
         currentSetCycle: 0
       };
+
+    case 'LOAD_TABATA_SET':
+      const setToLoad = state.tabataSets.find(set => set.id === action.payload);
+      if (!setToLoad) return state;
+      return {
+        ...state,
+        tabataSequences: [...setToLoad.sequences],
+        sequenceTotal: setToLoad.sequences.length,
+        currentSequenceIndex: 0,
+        currentSet: 0,
+        currentMode: 'tabata',
+        isRunning: false,
+        isPaused: false,
+        currentSetCycle: 0,
+        currentTime: 0,
+        currentPhase: 'work'
+      };
+
+    case 'ADD_TABATA_SET':
+      const newSet = {
+        ...action.payload,
+        id: Date.now().toString(),
+        createdAt: Date.now()
+      };
+      return {
+        ...state,
+        tabataSets: [...state.tabataSets, newSet]
+      };
+
+    case 'UPDATE_TABATA_SET':
+      return {
+        ...state,
+        tabataSets: state.tabataSets.map(set =>
+          set.id === action.payload.id ? { ...set, ...action.payload.set } : set
+        )
+      };
+
+    case 'DELETE_TABATA_SET':
+      return {
+        ...state,
+        tabataSets: state.tabataSets.filter(set => set.id !== action.payload)
+      };
     
     case 'TOGGLE_AUDIO':
       return { ...state, audioEnabled: !state.audioEnabled };
@@ -205,6 +252,30 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     const persistedState = loadState();
     if (persistedState) {
       dispatch({ type: 'LOAD_STATE', payload: persistedState });
+    } else {
+      // Initialize with sample sets if no data exists
+      const sampleSets = [
+        {
+          name: 'Entrenamiento Básico',
+          description: 'Set de iniciación para principiantes',
+          sequences: [
+            { id: 'sample1', name: 'Calentamiento', workTime: 30, restTime: 15, longRestTime: 60, sets: 3 },
+            { id: 'sample2', name: 'Cardio Básico', workTime: 45, restTime: 15, longRestTime: 60, sets: 4 }
+          ]
+        },
+        {
+          name: 'HIIT Intenso', 
+          description: 'Entrenamiento de alta intensidad',
+          sequences: [
+            { id: 'sample3', name: 'Sprint', workTime: 20, restTime: 10, longRestTime: 90, sets: 8 },
+            { id: 'sample4', name: 'Burpees', workTime: 30, restTime: 30, longRestTime: 120, sets: 5 }
+          ]
+        }
+      ];
+      
+      sampleSets.forEach(set => {
+        dispatch({ type: 'ADD_TABATA_SET', payload: set });
+      });
     }
   }, [loadState]);
 
@@ -233,6 +304,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     updateTabataSequence: (id, config) => dispatch({ type: 'UPDATE_TABATA', payload: { id, config } }),
     deleteTabataSequence: (id) => dispatch({ type: 'DELETE_TABATA', payload: id }),
     clearAllSequences: () => dispatch({ type: 'CLEAR_SEQUENCES' }),
+    loadTabataSet: (setId) => dispatch({ type: 'LOAD_TABATA_SET', payload: setId }),
+    addTabataSet: (set) => dispatch({ type: 'ADD_TABATA_SET', payload: set }),
+    updateTabataSet: (id, set) => dispatch({ type: 'UPDATE_TABATA_SET', payload: { id, set } }),
+    deleteTabataSet: (id) => dispatch({ type: 'DELETE_TABATA_SET', payload: id }),
     toggleAudio: () => dispatch({ type: 'TOGGLE_AUDIO' }),
     toggleVibration: () => dispatch({ type: 'TOGGLE_VIBRATION' })
   };

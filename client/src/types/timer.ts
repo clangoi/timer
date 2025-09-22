@@ -11,6 +11,14 @@ export interface TabataConfig {
   sets: number;
 }
 
+export interface TabataSet {
+  id: string;
+  name: string;
+  description?: string;
+  sequences: TabataConfig[];
+  createdAt: number; // timestamp
+}
+
 export interface TimerState {
   isRunning: boolean;
   isPaused: boolean;
@@ -22,6 +30,7 @@ export interface TimerState {
   currentSetCycle: number;
   sequenceTotal: number;
   tabataSequences: TabataConfig[];
+  tabataSets: TabataSet[];
   audioEnabled: boolean;
   vibrationEnabled: boolean;
   sessionStats: {
@@ -41,6 +50,10 @@ export interface TimerActions {
   updateTabataSequence: (id: string, config: Partial<TabataConfig>) => void;
   deleteTabataSequence: (id: string) => void;
   clearAllSequences: () => void;
+  loadTabataSet: (setId: string) => void;
+  addTabataSet: (set: Omit<TabataSet, 'id' | 'createdAt'>) => void;
+  updateTabataSet: (id: string, set: Partial<TabataSet>) => void;
+  deleteTabataSet: (id: string) => void;
   toggleAudio: () => void;
   toggleVibration: () => void;
 }

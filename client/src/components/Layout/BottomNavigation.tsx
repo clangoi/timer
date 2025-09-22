@@ -1,28 +1,46 @@
 import { BarChart3, Dumbbell, Timer, User } from 'lucide-react';
+import { Link, useLocation } from 'wouter';
 
 export function BottomNavigation() {
+  const [location] = useLocation();
+  
   const navItems = [
-    { icon: Timer, label: 'Timer', active: true },
-    { icon: BarChart3, label: 'Stats', active: false },
-    { icon: Dumbbell, label: 'Workouts', active: false },
-    { icon: User, label: 'Profile', active: false }
+    { icon: Timer, label: 'Timer', path: '/', active: location === '/' },
+    { icon: BarChart3, label: 'Sets', path: '/sets', active: location === '/sets' },
+    { icon: Dumbbell, label: 'Workouts', path: '/workouts', active: false },
+    { icon: User, label: 'Profile', path: '/profile', active: false }
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border" data-testid="bottom-navigation">
       <div className="max-w-md mx-auto px-4 py-2">
         <div className="flex justify-around">
-          {navItems.map(({ icon: Icon, label, active }) => (
-            <button
-              key={label}
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-              }`}
-              data-testid={`nav-${label.toLowerCase()}`}
-            >
-              <Icon className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">{label}</span>
-            </button>
+          {navItems.map(({ icon: Icon, label, path, active }) => (
+            path && (path === '/workouts' || path === '/profile') ? (
+              <button
+                key={label}
+                className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                  active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                }`}
+                data-testid={`nav-${label.toLowerCase()}`}
+                disabled
+              >
+                <Icon className="w-5 h-5 mb-1" />
+                <span className="text-xs font-medium">{label}</span>
+              </button>
+            ) : (
+              <Link key={label} href={path} asChild>
+                <button
+                  className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                    active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                  }`}
+                  data-testid={`nav-${label.toLowerCase()}`}
+                >
+                  <Icon className="w-5 h-5 mb-1" />
+                  <span className="text-xs font-medium">{label}</span>
+                </button>
+              </Link>
+            )
           ))}
         </div>
       </div>
