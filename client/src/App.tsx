@@ -34,21 +34,10 @@ function App() {
     }
   }, []);
 
-  // Register service worker for PWA
+  // Register service worker for PWA (temporarily disabled for debugging)
   useEffect(() => {
-    try {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/timer/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      }
-    } catch (error) {
-      console.warn('Service worker registration failed:', error);
-    }
+    // TODO: Re-enable service worker once PWA files are properly configured
+    console.log('Service worker registration temporarily disabled');
   }, []);
 
   return (

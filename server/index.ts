@@ -1,35 +1,31 @@
 import express from 'express';
+import path from 'path';
 import { createServer } from 'http';
-import { createServer as createViteServer } from 'vite';
-import { setupAuth } from './auth';
 
 async function startServer() {
   const app = express();
   const port = 5000;
 
-  // Middleware básico
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  console.log('Starting simple static server...');
 
-  // Configurar autenticación
-  setupAuth(app);
-
-  // En desarrollo, usar el servidor de Vite
-  if (process.env.NODE_ENV === 'development') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa'
-    });
-    
-    app.use(vite.ssrFixStacktrace);
-    app.use(vite.middlewares);
-  }
+  // Servir archivos estáticos desde dist/public
+  const staticPath = path.join(process.cwd(), 'dist/public');
+  console.log(`Serving static files from: ${staticPath}`);
+  
+  app.use(express.static(staticPath));
+  
+  // SPA fallback - servir index.html para todas las rutas
+  app.get('*', (req, res) => {
+    console.log(`Request for: ${req.path}`);
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
 
   const server = createServer(app);
 
   server.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Static server running on port ${port}`);
+    console.log(`Serving from: ${staticPath}`);
   });
 }
 
-startServer().catch(console.error);
+startServer();
